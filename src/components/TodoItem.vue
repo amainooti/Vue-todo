@@ -1,26 +1,52 @@
 <script setup>
+
 import { Icon } from '@iconify/vue';
+
+// to create props use the defineProps method
+
 const props = defineProps({
     todo: {
         type: Object,
         required: true
     },
+    index: {
+        type: Number,
+        required: true
+    }
 
 });
+
+
+defineEmits(['toggle-complete', "edit-todo"]);
 </script>
 
 <template>
     <li>
-        <input type="checkbox" :checked="todo.isCompleted" />
+        <input type="checkbox" :checked="todo.isCompleted" @input="$emit('toggle-complete', index)" />
         <div class="todo">
-            <input type="text" :value="todo.todo">
-            <span>
+            <input v-if="todo.isEditing" type="text" :value="todo.todo">
+            <span v-else :class="{'completed-todo': todo.isCompleted}">
                 {{ todo.todo }}
             </span>
         </div>
         <div class="todo-actions">
-            <Icon class="icon" icon="ph:check-circle" color="#41b080" width="22" />
-            <Icon class="icon" icon="ph:pencil-fill" color="#41b080" width="22" />
+            <Icon
+            v-if="todo.isEditing"
+            class="icon"
+            icon="ph:check-circle"
+            color="#41b080"
+            width="22"
+            @click="$emit('edit-todo', index)"
+            />
+
+            <Icon
+            v-else
+            class="icon"
+            icon="ph:pencil-fill"
+            color="#41b080"
+            width="22"
+            @click="$emit('edit-todo', index)"
+            />
             <Icon class="icon" icon="ph:trash" color="#f95e5e" width="22" />
         </div>
     </li>
@@ -60,6 +86,10 @@ li {
 
     }
     .todo {
+
+        .completed-todo {
+            text-decoration: line-through;
+        }
         flex: 1;
         input[type="text"] {
             width: 100%;
